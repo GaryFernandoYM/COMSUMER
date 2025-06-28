@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Visualización de Datos desde S3</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #eef1f5;
+            padding: 30px;
+            margin: 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        #buscador {
+            display: block;
+            margin: 0 auto 20px auto;
+            padding: 10px 15px;
+            width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #ffffff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+            overflow-x: auto;
+        }
+
+        th,
+        td {
+            padding: 10px 12px;
+            border: 1px solid #e0e0e0;
+            font-size: 13px;
+        }
+
+        th {
+            background-color: #007acc;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #e8f4ff;
+            transition: background 0.2s ease-in-out;
+        }
+
+        .error {
+            color: red;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        @media screen and (max-width: 768px) {
+
+            table,
+            thead,
+            tbody,
+            th,
+            td,
+            tr {
+                display: block;
+            }
+
+            th {
+                text-align: left;
+            }
+
+            td {
+                border: none;
+                padding: 8px 0;
+                position: relative;
+                padding-left: 50%;
+            }
+
+            td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 10px;
+                top: 8px;
+                font-weight: bold;
+                color: #007acc;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>🏡 Datos desde S3 Grupo FEGF</h1>
+    <input type="text" id="buscador" placeholder="🔍 Buscar por cualquier campo...">
+
+    <div id="tabla-container">
+        <p class="error" id="error"></p>
+    </div>
+
+    <script>
+        const columnasOrdenadas = [
+            "id", "date", "price", "bedrooms", "bathrooms", "sqft_living", "sqft_lot",
+            "floors", "waterfront", "view", "condition", "grade", "sqft_above",
+            "sqft_basement", "yr_built", "yr_renovated", "zipcode", "lat", "long",
+            "sqft_living15", "sqft_lot15"
+        ];
+
+        let todasLasFilas = [];
+
+        function renderTabla(filas) {
+            const tabla = document.createElement('table');
+            const thead = document.createElement('thead');
+            const trHead = document.createElement('tr');
+
+            columnasOrdenadas.forEach(col => {
+                const th = document.createElement('th');
+                th.textContent = col;
+                trHead.appendChild(th);
+            });
+
+            thead.appendChild(trHead);
+            tabla.appendChild(thead);
+
+            const tbody = document.createElement('tbody');
+            filas.forEach(fila => {
+                const tr = document.createElement('tr');
+                columnasOrdenadas.forEach(col => {
+                    const td = document.createElement('td');
+                    td.textContent = fila[col] ?? '';
+                    td.setAttribute('data-label', col);
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+
+            tabla.appendChild(tbody);
+            const contenedor = document.getElementById('tabla-container');
+            contenedor.innerHTML = '';
+            contenedor.appendChild(tabla);
+        }
+
+        function filtrarTabla(texto) {
+            const filtro = texto.toLowerCase();
+            const filtradas = todasLasFilas.filter(fila =>
+                columnasOrdenadas.some(col =>
+                    (fila[col] + '').toLowerCase().includes(filtro)
+                )
+            );
+            renderTabla(filtradas);
+        }
+
+        document.getElementById('buscador').addEventListener('input', (e) => {
+            filtrarTabla(e.target.value);
+        });
+
+        fetch('/json')
+            .then(res => res.json())
+            .then(data => {
+                if (!Array.isArray(data) || data.length === 0) {
+                    document.getElementById('error').textContent = '⚠️ El archivo JSON está vacío o mal formateado.';
+                    return;
+                }
+                todasLasFilas = data;
+                renderTabla(data);
+            })
+            .catch(error => {
+                document.getElementById('error').textContent = '❌ Error al obtener el JSON: ' + error.message;
+            });
+    </script>
+
+</body>
+
+</html>
