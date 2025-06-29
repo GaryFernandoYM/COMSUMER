@@ -62,6 +62,7 @@ def index():
 @app.route('/json')
 def obtener_json():
     try:
+        print("📦 Intentando leer desde S3...")
         s3 = boto3.client(
             's3',
             region_name='us-east-1',
@@ -70,15 +71,18 @@ def obtener_json():
         )
         obj = s3.get_object(Bucket=BUCKET_NAME, Key=FILE_NAME)
         contenido = obj['Body'].read().decode('utf-8')
+        print("✅ Archivo leído desde S3")
+
         data = json.loads(contenido)
+        print("🧠 JSON parseado correctamente")
 
-        # Insertar datos en MySQL (si quieres seguir insertando)
         insertar_datos_en_mysql(data)
+        return jsonify({'status': '✅ Datos insertados correctamente'})
 
-        # ⚠️ Esta parte es clave: devolvemos los datos como JSON real
-        return jsonify(data)
     except Exception as e:
+        print("❌ Error en /json:", str(e))
         return jsonify({'error': str(e)}), 500
+
 
 
 if __name__ == '__main__':
