@@ -11,11 +11,10 @@ BUCKET_NAME = 'bucket-lambda-s3-fegf'
 FILE_NAME = 'kc_house_datcsv.json'
 
 # RDS MySQL
-DB_HOST = os.getenv("DB_HOST")
-DB_USER = os.getenv("DB_USER")
-DB_PASSWORD = os.getenv("DB_PASSWORD")
-DB_NAME = os.getenv("DB_NAME")
-
+DB_HOST = 'flaskdb.cyvqyyk0mosb.us-east-1.rds.amazonaws.com'
+DB_USER = 'admin'
+DB_PASSWORD = '12345Seguro'
+DB_NAME = 'flaskdb'
 def insertar_datos_en_mysql(data):
     conn = pymysql.connect(
         host=DB_HOST,
