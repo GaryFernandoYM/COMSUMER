@@ -72,10 +72,14 @@ def obtener_json():
         contenido = obj['Body'].read().decode('utf-8')
         data = json.loads(contenido)
 
+        # Insertar datos en MySQL (si quieres seguir insertando)
         insertar_datos_en_mysql(data)
-        return jsonify({'status': '✅ Datos insertados correctamente'})
+
+        # ⚠️ Esta parte es clave: devolvemos los datos como JSON real
+        return jsonify(data)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
