@@ -4,13 +4,11 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-# AWS S3
 AWS_ACCESS_KEY = os.getenv("AWS_ACCESS_KEY")
 AWS_SECRET_KEY = os.getenv("AWS_SECRET_KEY")
 BUCKET_NAME = 'bucket-lambda-s3-fegf'
 FILE_NAME = 'kc_house_datcsv.json'
 
-# RDS MySQL
 DB_HOST = 'flaskdb.cyvqyyk0mosb.us-east-1.rds.amazonaws.com'
 DB_USER = 'admin'
 DB_PASSWORD = '12345Seguro'
@@ -78,7 +76,6 @@ def obtener_json():
 
         insertar_datos_en_mysql(data)
 
-        # En lugar de devolver solo un mensaje, devolvemos los datos reales
         return jsonify(data)
 
     except Exception as e:
