@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 AWS_ACCESS_KEY = os.getenv("AWS_ACCESS_KEY")
 AWS_SECRET_KEY = os.getenv("AWS_SECRET_KEY")
-BUCKET_NAME = 'bucket-lambda-s3-fegf'
+BUCKET_NAME = 'bucket-json-corrected'
 FILE_NAME = 'kc_house_datcsv.json'
 
 DB_HOST = 'flaskdb.cyvqyyk0mosb.us-east-1.rds.amazonaws.com'
